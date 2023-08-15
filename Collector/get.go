@@ -24,7 +24,8 @@ const (
 )
 
 func (CLIENT *K8sclient) PullClusterInfo() (ClusterInfoStruct, error) {
-	Cluster := &ClusterInfoStruct{}
+	ClusterInfo := &ClusterInfoStruct{}
+
 	MetricresClient, err := versioned.NewForConfig(CLIENT.config)
 	if err != nil {
 		fmt.Println(err)
@@ -36,43 +37,34 @@ func (CLIENT *K8sclient) PullClusterInfo() (ClusterInfoStruct, error) {
 	}
 
 	for _, node := range metrics.Items {
-		Cluster.Cpu += float64((node.Usage.Cpu().MilliValue()))
+		ClusterInfo.Cpu += float64(node.Usage.Cpu().MilliValue())
+		ClusterInfo.Usedmemory += float64((node.Usage.Memory().Value()) / 1000000)
+		ClusterInfo.Disk += float64(node.Usage.StorageEphemeral().Value() / 1000000)
 	}
+
 	nodes, err := CLIENT.clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, node := range nodes.Items {
-		Cluster.Cores += (node.Status.Capacity.Cpu().Value())
+		ClusterInfo.Nodes += (node.Status.Capacity.Cpu().Value())
+		ClusterInfo.Cores += (node.Status.Capacity.Cpu().Value())
+		ClusterInfo.Totaldisk += float64(((node.Status.Capacity.StorageEphemeral().Value()) / 1000000))
+		ClusterInfo.Totalmemory += float64((node.Status.Capacity.Memory().Value()) / 1000000)
 	}
 
-	for _, node := range metrics.Items {
-		Cluster.Usedmemory += float64((node.Usage.Memory().Value()) / 1000000)
-	}
-
-	for _, node := range nodes.Items {
-		Cluster.Totalmemory += float64((node.Status.Capacity.Memory().Value()) / 1000000)
-	}
-	for _, node := range metrics.Items {
-		Cluster.Disk += float64((node.Usage.StorageEphemeral().Value()) / 1000000)
-	}
-
-	for _, node := range nodes.Items {
-		Cluster.Totaldisk += float64((node.Status.Capacity.StorageEphemeral().Value()) / 1000000)
-	}
-	Cluster.Nodes = int64(len(nodes.Items))
 	ClusterInfo = &ClusterInfoStruct{
-		ClusterName: Cluster.ClusterName,
-		Cpu:         Cluster.Cpu,
-		Cores:       Cluster.Cores,
-		Nodes:       Cluster.Nodes,
-		Totalmemory: Cluster.Totalmemory,
-		Usedmemory:  Cluster.Usedmemory,
-		Disk:        Cluster.Disk,
-		Totaldisk:   Cluster.Totaldisk,
-		Billing:     Cluster.Billing,
+
+		Cpu:         ClusterInfo.Cpu,
+		Usedmemory:  ClusterInfo.Usedmemory,
+		Disk:        ClusterInfo.Disk,
+		Nodes:       ClusterInfo.Nodes,
+		Cores:       ClusterInfo.Cores,
+		Totaldisk:   ClusterInfo.Totaldisk,
+		Totalmemory: ClusterInfo.Totalmemory,
 	}
+
 	return *ClusterInfo, nil
 }
 

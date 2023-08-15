@@ -8,15 +8,10 @@ import (
 )
 
 type GlobalDATA struct {
-	ClusterInfo    ClusterInfoStruct
-	PodInfo        PodInfoStruct
-	DeploymentInfo DeploymentInfoStruct
+	Timestamp   time.Time
+	PodInfo     PodInfoStruct
+	Clsuterinfo ClusterInfoStruct
 }
-type DataBase struct {
-	clustermetrices ClusterInfoStruct
-}
-
-var ClusterInfo *ClusterInfoStruct
 
 type ClusterInfoStruct struct {
 	ClusterName string
@@ -30,42 +25,36 @@ type ClusterInfoStruct struct {
 	Billing     float64
 }
 
-var NodeInfoList []NodeInfoStruct
-
-type NodeInfoStruct struct {
-	Name    []string
-	Memory  []float64
-	CPU     []float64
-	Disk    []float64
-	CpuTemp []float64
-	IP      []string
+type PodInfoStruct struct {
+	Timestamp time.Time
+	PODS      []PodStruct
 }
 
-type PodInfoStruct struct {
-	PodName                       []string
-	PodCreation                   []time.Time
-	PodDeletionGracePeriodSeconds []*int64
-	PodPhase                      []v1.PodPhase
-	PodRunningOn                  []string
+type PodStruct struct {
+	PodName                       string
+	PodCreation                   time.Time
+	PodDeletionGracePeriodSeconds *int64
+	PodPhase                      v1.PodPhase
+	PodRunningOn                  string
 	PodLabels                     map[string]string
-	PodNamespace                  []string
+	PodNamespace                  string
 	PodAnnotation                 map[string]string
 
-	PodOwnerReferences     []string
-	PodResourceVersion     []string
-	PodUID                 []types.UID
-	PodDNSConfig           []*v1.PodDNSConfig
-	PodDNSPolicy           []v1.DNSPolicy
-	PodEnableServiceLinks  []*bool
-	PodEphemeralContainers []v1.EphemeralContainer
-	PodHostIpc             []bool
-	PodHostNetwork         []bool
-	PodHostPID             []bool
-	PodHostUsers           []*bool
-	PodImagePullSecrets    []string
-	PodInitContainers      []string
-	PodRestartPolicy       []v1.RestartPolicy
-	PodRuntimeClassName    []*string
+	PodOwnerReferences     string
+	PodResourceVersion     string
+	PodUID                 types.UID
+	PodDNSConfig           *v1.PodDNSConfig
+	PodDNSPolicy           v1.DNSPolicy
+	PodEnableServiceLinks  *bool
+	PodEphemeralContainers v1.EphemeralContainer
+	PodHostIpc             bool
+	PodHostNetwork         bool
+	PodHostPID             bool
+	PodHostUsers           *bool
+	PodImagePullSecrets    string
+	PodInitContainers      string
+	PodRestartPolicy       v1.RestartPolicy
+	PodRuntimeClassName    *string
 }
 
 type DeploymentInfoStruct struct {
