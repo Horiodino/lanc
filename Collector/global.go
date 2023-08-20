@@ -99,6 +99,3 @@ func NewClient() K8sclient {
 	}
 	return *KCLIENT
 }
-
-type DISKINFO interface {
-}

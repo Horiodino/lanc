@@ -11,18 +11,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-const (
-	one   = 1
-	two   = 2
-	three = 3
-	four  = 4
-	five  = 5
-	six   = 6
-	seven = 7
-	eight = 8
-	nine  = 9
-)
-
 func (CLIENT *K8sclient) PullClusterInfo() (ClusterInfoStruct, error) {
 	ClusterInfo := &ClusterInfoStruct{}
 
@@ -68,11 +56,12 @@ func (CLIENT *K8sclient) PullClusterInfo() (ClusterInfoStruct, error) {
 	return *ClusterInfo, nil
 }
 
-func (CLIENT *K8sclient) PullNodeInfo() (string, error) {
+//func (CLIENT *K8sclient) PullNodeInfo() (string, error) {
+//
+//	return "NodeInfo", nil
+//}
 
-	return "NodeInfo", nil
-}
-
+/*
 func (CLIENT *K8sclient) PullDeploymentInfo() (DeploymentInfoStruct, error) {
 
 	Deployments, err := CLIENT.clientset.AppsV1().Deployments("").List(context.Background(), metav1.ListOptions{})
@@ -90,7 +79,9 @@ func (CLIENT *K8sclient) PullDeploymentInfo() (DeploymentInfoStruct, error) {
 
 	return *Deploy, nil
 }
+*/
 
+/*
 func (CLIENT *K8sclient) PullStatefulSetInfo() (StatefulSetInfoStruct, error) {
 
 	ST, err := CLIENT.clientset.AppsV1().StatefulSets("").List(context.Background(), metav1.ListOptions{})
@@ -120,7 +111,9 @@ func (CLIENT *K8sclient) PullStatefulSetInfo() (StatefulSetInfoStruct, error) {
 
 	return *Statefulsets, nil
 }
+*/
 
+/*
 func (CLIENT *K8sclient) PullDaemonSetInfo() (DeploymentInfoStruct, error) {
 
 	DS, err := CLIENT.clientset.AppsV1().DaemonSets("").List(context.Background(), metav1.ListOptions{})
@@ -148,31 +141,31 @@ func (CLIENT *K8sclient) PullDaemonSetInfo() (DeploymentInfoStruct, error) {
 
 	return DeploymentInfoStruct{}, nil
 }
-
-func (CLIENT *K8sclient) PullReplicaSetInfo() (string, error) {
-	return "ReplicaSetInfo", nil
-}
-
-func (CLIENT *K8sclient) PullReplicationControllerInfo() (string, error) {
-	return "ReplicationControllerInfo", nil
-}
-
-func (CLIENT *K8sclient) PullHorizontalPodAutoscalerInfo() (string, error) {
-	return "HorizontalPodAutoscalerInfo", nil
-}
-
-func (CLIENT *K8sclient) PullPodDisruptionBudgetInfo() (string, error) {
-	return "PodDisruptionBudgetInfo", nil
-}
-
-func (CLIENT *K8sclient) PullNetworkPolicyInfo() (string, error) {
-	return "NetworkPolicyInfo", nil
-}
-
-func (CLIENT *K8sclient) PullPodSecurityPolicyInfo() (string, error) {
-	return "PodSecurityPolicyInfo", nil
-}
-
-func (CLIENT *K8sclient) PullLimitRangeInfo() (string, error) {
-	return "LimitRangeInfo", nil
-}
+*/
+//func (CLIENT *K8sclient) PullReplicaSetInfo() (string, error) {
+//	return "ReplicaSetInfo", nil
+//}
+//
+//func (CLIENT *K8sclient) PullReplicationControllerInfo() (string, error) {
+//	return "ReplicationControllerInfo", nil
+//}
+//
+//func (CLIENT *K8sclient) PullHorizontalPodAutoscalerInfo() (string, error) {
+//	return "HorizontalPodAutoscalerInfo", nil
+//}
+//
+//func (CLIENT *K8sclient) PullPodDisruptionBudgetInfo() (string, error) {
+//	return "PodDisruptionBudgetInfo", nil
+//}
+//
+//func (CLIENT *K8sclient) PullNetworkPolicyInfo() (string, error) {
+//	return "NetworkPolicyInfo", nil
+//}
+//
+//func (CLIENT *K8sclient) PullPodSecurityPolicyInfo() (string, error) {
+//	return "PodSecurityPolicyInfo", nil
+//}
+//
+//func (CLIENT *K8sclient) PullLimitRangeInfo() (string, error) {
+//	return "LimitRangeInfo", nil
+//}
