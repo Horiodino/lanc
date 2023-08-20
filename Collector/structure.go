@@ -9,8 +9,10 @@ import (
 
 type GlobalDATA struct {
 	Timestamp   time.Time
-	PodInfo     PodInfoStruct
 	Clsuterinfo ClusterInfoStruct
+	Nodeinfo    NodeInfoStruct
+	PodInfo     PodInfoStruct
+	DeployInfo  DeploymentInfoStruct
 }
 
 type ClusterInfoStruct struct {
@@ -25,9 +27,30 @@ type ClusterInfoStruct struct {
 	Billing     float64
 }
 
+type NodeInfoStruct struct {
+	Timestamp time.Time
+	Nodes     []NodeStruct
+}
+
+type NodeStruct struct {
+	Name        string
+	MemoryUses  int64
+	TotalMemory int64
+	CPUUses     int64
+	TotalCPU    int64
+	Disk        int64
+	TotalDisk   int64
+	IP          string
+}
+
 type PodInfoStruct struct {
 	Timestamp time.Time
 	PODS      []PodStruct
+}
+
+type DeploymentInfoStruct struct {
+	Timestamp   time.Time
+	Deployments []DeploymentStructure
 }
 
 type PodStruct struct {
@@ -57,83 +80,24 @@ type PodStruct struct {
 	PodRuntimeClassName    *string
 }
 
-type DeploymentInfoStruct struct {
-	Name                    []string
-	Namespace               []string
-	CreationTimestamp       []string
-	Replicas                []int32
-	AvailableRep            []int32
-	ReadyRep                []int32
-	UpToDateRep             []int32
-	AvailableUpToDateRep    []int32
-	Age                     []string
-	Spec                    []string
-	Labels                  []string
-	Selector                []string
-	Strategy                []string
-	MinReadySeconds         []int32
-	RevisionHistoryLimit    []int32
-	Paused                  []bool
-	ProgressDeadlineSeconds []int32
-	ReplicaSet              []string
-	Conditions              []string
-}
-
-type StatefulSetInfoStruct struct {
-	Apiver []string
-	Name   []string
-	// Selector         []string
-	// MatchLabels []string
-	ServiceName []string
-	Replicas    []int32
-	// ReadyRep         []int32
-	CurrentRep       []int32
-	Age              []string
-	MinReadySec      []int32
-	Label            []string
-	PodName          []string
-	PodImage         []string
-	VolmountName     []string
-	AccessModes      []string
-	StorageClassName []string
-	Request          []string
-	Storage          []string
-}
-
-type DaemonSetInfoStruct struct {
-	Apiver                        []string
-	Name                          []string
-	Namespace                     []string
-	Label                         []string
-	MatchLabels                   []string
-	Key                           []string
-	Oprator                       []string
-	Effect                        []string
-	ContainersName                []string
-	ContainersImage               []string
-	TerminationGracePeriodSeconds []int64
-	VolumeMountsName              []string
-	VolumeMountsMountPath         []string
-	CreationTimestamp             []string
-}
-
-type ReplicaSetInfoStruct struct {
-}
-
-type ReplicationControllerInfoStruct struct {
-}
-
-type HorizontalPodAutoscalerInfoStruct struct {
-}
-
-type PodDisruptionBudgetInfoStruct struct {
-}
-
-type NetworkPolicyInfoStruct struct {
-}
-
-type PodSecurityPolicyInfoStruct struct {
-}
-
-type LimitRangeInfoStruct struct {
+type DeploymentStructure struct {
+	Name                    string
+	Namespace               string
+	CreationTimestamp       time.Time
+	Replicas                int32
+	AvailableRep            int32
+	ReadyRep                int32
+	UpToDateRep             int32
+	AvailableUpToDateRep    int32
+	Age                     string
+	Spec                    string
+	Labels                  string
+	Selector                string
+	Strategy                string
+	MinReadySeconds         int32
+	RevisionHistoryLimit    int32
+	Paused                  bool
+	ProgressDeadlineSeconds int32
+	ReplicaSet              int32
+	Conditions              string
 }
