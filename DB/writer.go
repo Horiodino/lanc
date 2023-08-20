@@ -1,9 +1,11 @@
 package db
 
 import (
+	collector "cc/Collector"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -60,7 +62,6 @@ func GenerateHashID() []byte {
 	key := []byte("123456789qwertyuioplkjhgfdsazxcv") // 32-byte AES key
 	plaintext := []byte("Hello, World!")
 
-	// Create a new AES cipher block
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		fmt.Println(err)
@@ -81,8 +82,6 @@ func GenerateHashID() []byte {
 	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
 	ConstHashValue = ciphertext
 	ConstHashIdAddtime = time.Now()
-
-	fmt.Println(ciphertext)
 
 	HASHID := HASHVALUE{
 		hashid:    ciphertext,
@@ -187,7 +186,7 @@ func (DBClient *Client) LockFile() error {
 	return nil
 }
 
-func (DBClient *Client) WriteData() error {
+func (DBClient *Client) WriteData(Globaldata collector.GlobalDATA) error {
 
 	if DBClient.WriteAccess == false {
 		return fmt.Errorf("write Access is not given")
@@ -236,6 +235,22 @@ func (DBClient *Client) WriteData() error {
 
 	// now save the file in the folder
 	// SaveDataC func can be only called like this WriteData.SaveDataC()
+	f, err := os.Create("History/" + CurrentYear + "/" + CurrentMonth + "/" + CurrentDay + "/" + CurrentHour + "/" + CurrentMinute + "/" + CurrentMinute + "info.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(f)
+
+	err = json.NewEncoder(f).Encode(Globaldata)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -268,7 +283,127 @@ func exists(current, CurrentMonth, CurrentDay, CurrentHour, CurrentMinute string
 	return true
 }
 
-func (DBClient *Client) ReadData() error {
+func (DBClient *Client) ReadData(Year string, Month string, Day string, Hour string, Minute string, object string, name string) error {
+
+	// read the data from the database
+	// and return the data
+
+	if Year > strconv.Itoa(time.Now().Year()) {
+		if Month > strconv.Itoa(int(time.Now().Month())) {
+			if Day > strconv.Itoa(time.Now().Day()) {
+				if Hour > strconv.Itoa(time.Now().Hour()) {
+					if Minute > strconv.Itoa(time.Now().Minute()) {
+						return fmt.Errorf("invalid time")
+					}
+				}
+			}
+		}
+	}
+
+	if DBClient.ReadAccess == false {
+		return fmt.Errorf("read Access is not given")
+	}
+
+	SearchPath := "History/" + Year + "/" + Month + "/" + Day + "/" + Hour + "/" + Minute + "/" + Minute + "info.json"
+
+	file, err := os.Open(SearchPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(file)
+
+	var data collector.GlobalDATA
+
+	err = json.NewDecoder(file).Decode(&data)
+	if err != nil {
+		return err
+	}
+
+	// use switch case to return the data
+
+	if name != "" {
+		switch object {
+		case "deployments":
+			for _, v := range data.DeployInfo.Deployments {
+				if v.Name == name {
+					fmt.Println("─────────────", v.Name, "─────────────")
+					fmt.Println(v.Namespace)
+					fmt.Println(v.CreationTimestamp)
+					fmt.Println(v.Replicas)
+					fmt.Println(v.AvailableRep)
+					fmt.Println(v.ReadyRep)
+					fmt.Println(v.UpToDateRep)
+					fmt.Println(v.AvailableUpToDateRep)
+					fmt.Println(v.Age)
+					fmt.Println(v.Spec)
+					fmt.Println(v.Labels)
+					fmt.Println(v.Selector)
+					fmt.Println(v.Strategy)
+					fmt.Println(v.MinReadySeconds)
+					fmt.Println(v.RevisionHistoryLimit)
+					fmt.Println(v.Paused)
+					fmt.Println(v.ProgressDeadlineSeconds)
+					fmt.Println(v.ReplicaSet)
+					fmt.Println(v.Conditions)
+
+					fmt.Println("──────────────────────────────────")
+				}
+			}
+
+		case "pods":
+			for _, v := range data.PodInfo.PODS {
+				if v.PodName == name {
+					fmt.Println("─────────────", v.PodName, "─────────────")
+					fmt.Println(v.PodCreation)
+					fmt.Println(v.PodDeletionGracePeriodSeconds)
+					fmt.Println(v.PodPhase)
+					fmt.Println(v.PodRunningOn)
+					fmt.Println(v.PodLabels)
+					fmt.Println(v.PodNamespace)
+					fmt.Println(v.PodAnnotation)
+
+					fmt.Println(v.PodOwnerReferences)
+					fmt.Println(v.PodResourceVersion)
+					fmt.Println(v.PodUID)
+					fmt.Println(v.PodDNSConfig)
+					fmt.Println(v.PodDNSPolicy)
+					fmt.Println(v.PodEnableServiceLinks)
+					fmt.Println(v.PodEphemeralContainers)
+					fmt.Println(v.PodHostIpc)
+					fmt.Println(v.PodHostNetwork)
+					fmt.Println(v.PodHostPID)
+					fmt.Println(v.PodHostUsers)
+					fmt.Println(v.PodImagePullSecrets)
+					fmt.Println(v.PodInitContainers)
+					fmt.Println(v.PodRestartPolicy)
+					fmt.Println(v.PodRuntimeClassName)
+					fmt.Println("──────────────────────────────────")
+				}
+			}
+
+		case "default":
+			return fmt.Errorf("invalid object")
+		}
+
+	} else {
+
+		switch object {
+		case "deployments":
+			fmt.Println(data.DeployInfo.Deployments)
+
+		case "pods":
+			fmt.Println(data.PodInfo)
+
+		case "default":
+			return fmt.Errorf("invalid object")
+		}
+
+	}
 
 	return nil
 }
