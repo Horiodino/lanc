@@ -41,6 +41,7 @@ type AcessDB interface {
 	WriteDATA(DBClient *Client) error
 	ReadDAta(DBClient *Client) error
 	LockFile(DBClient *Client) error
+	GETIPS(DBClient *Client) ([]string, error)
 }
 
 func CreateClient() *Client {
@@ -184,6 +185,43 @@ func (DBClient *Client) LockFile() error {
 	//until then the file will be locked and no one can access it except read only
 
 	return nil
+}
+
+func (DBClient *Client) GETIPS() ([]string, error) {
+	if DBClient.WriteAccess == true {
+		return nil, fmt.Errorf("Write Access is not granted")
+	}
+	if DBClient.ReadAccess == false {
+		return nil, fmt.Errorf("Read Access is not granted")
+	}
+
+	SearchPath := "History/" + strconv.Itoa(time.Now().Year()) + "/" + strconv.Itoa(int(time.Now().Month())) + "/" + strconv.Itoa(time.Now().Day()) + "/" + strconv.Itoa(time.Now().Hour()) + "/" + strconv.Itoa(time.Now().Minute()) + "/" + strconv.Itoa(time.Now().Minute()) + "info.json"
+
+	file, err := os.Open(SearchPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(file)
+
+	var data collector.GlobalDATA
+
+	err = json.NewDecoder(file).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	var IPS []string
+
+	for _, v := range data.Nodeinfo.Nodes {
+		IPS = append(IPS, v.IP)
+	}
+
+	return IPS, nil
 }
 
 func (DBClient *Client) WriteData(Globaldata collector.GlobalDATA) error {
@@ -366,7 +404,6 @@ func (DBClient *Client) ReadData(Year string, Month string, Day string, Hour str
 					fmt.Println(v.PodLabels)
 					fmt.Println(v.PodNamespace)
 					fmt.Println(v.PodAnnotation)
-
 					fmt.Println(v.PodOwnerReferences)
 					fmt.Println(v.PodResourceVersion)
 					fmt.Println(v.PodUID)
